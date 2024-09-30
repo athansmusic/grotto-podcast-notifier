@@ -1,13 +1,8 @@
 import feedparser
 import requests
-import re
 
 rss_feed_url = "https://feeds.acast.com/public/shows/thegrottopod"
 discord_webhook_url = "https://discord.com/api/webhooks/1290158642968006746/MbqHBCLSOFuL2GxDBWEEArMAEvnDnBDCAxRQ7otf1UtTTujGUU4V2YuFJB-cRe1E1oNc"
-
-def strip_html_tags(text):
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
 
 def post_latest_episode():
     try:
@@ -16,20 +11,23 @@ def post_latest_episode():
             latest_episode = feed.entries[0]
             episode_title = latest_episode.title
             episode_link = latest_episode.link
-            episode_description = strip_html_tags(latest_episode.description)
+            episode_image = latest_episode.image['href'] if 'image' in latest_episode else None
 
             embed = {
                 "title": f"🎙️ New Episode: {episode_title}",
-                "description": episode_description[:200] + "..." if len(episode_description) > 200 else episode_description,
                 "url": episode_link,
                 "color": 16776960,
                 "fields": [
                     {
                         "name": "Listen Now",
-                        "value": f"[Click here to listen to the episode]({episode_link})"
+                        "value": f"[Click here to listen]({episode_link})"
                     }
                 ]
             }
+
+            if episode_image:
+                embed["thumbnail"] = {"url": episode_image}
+
             payload = {"embeds": [embed]}
             response = requests.post(discord_webhook_url, json=payload)
 
