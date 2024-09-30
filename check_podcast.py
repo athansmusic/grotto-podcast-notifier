@@ -2,7 +2,7 @@ import feedparser
 import requests
 import os
 
-rss_feed_url = "https://shows.acast.com/thegrottopod/episodes.rss"
+rss_feed_url = "https://feeds.acast.com/public/shows/thegrottopod"
 
 discord_webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
 
