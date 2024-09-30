@@ -4,7 +4,7 @@ import os
 
 rss_feed_url = "https://feeds.acast.com/public/shows/thegrottopod"
 
-discord_webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+discord_webhook_url = "https://discord.com/api/webhooks/1290158642968006746/MbqHBCLSOFuL2GxDBWEEArMAEvnDnBDCAxRQ7otf1UtTTujGUU4V2YuFJB-cRe1E1oNc"
 
 def post_latest_episode():
     try:
