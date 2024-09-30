@@ -22,7 +22,7 @@ def post_latest_episode():
             print(f"Episode description: {episode_description}")
 
             data = {
-                "content": f"New episode of THE GROTTO is now live: click here to listen to {episode_title}. {episode_description} \n{episode_link}"
+                "content": f"New episode of THE GROTTO is now live: click here to listen to {episode_title}. \n{episode_link}"
             }
             print(f"Posting to Discord via webhook: {discord_webhook_url}")
             response = requests.post(discord_webhook_url, json=data)
