@@ -2,21 +2,28 @@ name: Check Podcast Episodes
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/10 * * * *"   # Runs the workflow every 10 minutes
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
   check_episode:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
+
+      - name: Restore cache
+        id: cache-last-posted
+        uses: actions/cache@v3
+        with:
+          path: last_posted.txt
+          key: last-posted-key
 
       - name: Install dependencies
         run: |
@@ -25,3 +32,10 @@ jobs:
       - name: Run podcast check script
         run: |
           python check_podcast.py
+
+      - name: Save cache
+        if: steps.cache-last-posted.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+          path: last_posted.txt
+          key: last-posted-key
