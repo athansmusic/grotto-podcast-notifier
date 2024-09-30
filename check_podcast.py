@@ -6,13 +6,9 @@ import os
 rss_feed_url = "https://shows.acast.com/thegrottopod/episodes.rss"
 
 # Discord webhook URL from environment variable
-discord_webhook_url = os.getenv("https://discord.com/api/webhooks/1290158642968006746/MbqHBCLSOFuL2GxDBWEEArMAEvnDnBDCAxRQ7otf1UtTTujGUU4V2YuFJB-cRe1E1oNc")
+discord_webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
 
-# Store the last published episode link to avoid duplicates
-last_episode_url = None
-
-def check_for_new_episode():
-    global last_episode_url
+def post_latest_episode():
     feed = feedparser.parse(rss_feed_url)
     
     if feed.entries:
@@ -22,19 +18,16 @@ def check_for_new_episode():
         episode_link = latest_episode.link
         episode_description = latest_episode.description
 
-        # Check if this is a new episode (not the last one we posted about)
-        if episode_link != last_episode_url:
-            # Send a message to Discord via webhook
-            data = {
-                "content": f"New episode of THE GROTTO is now live: click here to listen to {episode_title}. {episode_description} \n{episode_link}"
-            }
-            requests.post(discord_webhook_url, json=data)
-            
-            # Update the last_episode_url to avoid duplicate posts
-            last_episode_url = episode_link
-            print(f"Posted new episode: {episode_title}")
+        # Send a message to Discord via webhook, even if it's not a new episode
+        data = {
+            "content": f"New episode of THE GROTTO is now live: click here to listen to {episode_title}. {episode_description} \n{episode_link}"
+        }
+        response = requests.post(discord_webhook_url, json=data)
+        
+        if response.status_code == 204:
+            print(f"Successfully posted new episode: {episode_title}")
         else:
-            print("No new episode.")
+            print(f"Failed to post to Discord: {response.status_code}, {response.text}")
 
-# Run the check once (GitHub Actions will schedule the script)
-check_for_new_episode()
+# Run the check once (for testing)
+post_latest_episode()
